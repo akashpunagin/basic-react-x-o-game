@@ -8,6 +8,7 @@ class Game extends React.Component {
       history: [{ squares: Array(9).fill(null) }],
       isXNext: true,
       stepNumber: 0,
+      indexClickedHistory: [{ index: Array(9).fill(null) }],
     };
   }
 
@@ -15,6 +16,7 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const currentSquareObj = history[history.length - 1];
     const squares = currentSquareObj.squares.slice();
+
     if (this.calculateWinner(squares) || squares[i]) {
       return;
     }
@@ -24,6 +26,7 @@ class Game extends React.Component {
       history: history.concat([{ squares }]),
       stepNumber: history.length,
       isXNext: !this.state.isXNext,
+      indexClickedHistory: this.state.indexClickedHistory.concat([i]),
     });
   }
 
@@ -64,11 +67,29 @@ class Game extends React.Component {
     const winner = this.calculateWinner(currentSquareObj.squares);
 
     const moves = history.map((step, index) => {
-      const desc = index ? "Go to Move:" + index : "Go to the Game Start";
+      let desc = index ? "Go to Move:" + index : "Go to the Game Start";
+
+      let rowAndColDescriptions = step.squares.map(
+        (squareValue, squareIndex) => {
+          if (squareValue !== null) {
+            let row = squareIndex % 3;
+            let col = parseInt(squareIndex / 3);
+
+            return squareValue === "X"
+              ? `X Position: (${row}, ${col})`
+              : `O Position: (${row}, ${col})`;
+          } else {
+            return "";
+          }
+        }
+      );
 
       return (
         <li key={index}>
-          <button onClick={() => this.jumpTo(index)}>{desc}</button>
+          <button onClick={() => this.jumpTo(index)}>
+            {desc} ::
+            {rowAndColDescriptions[this.state.indexClickedHistory[index]]}
+          </button>
         </li>
       );
     });
