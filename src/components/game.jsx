@@ -8,7 +8,7 @@ class Game extends React.Component {
       history: [{ squares: Array(9).fill(null) }],
       isXNext: true,
       stepNumber: 0,
-      indexClickedHistory: [{ index: Array(9).fill(null) }],
+      indexClickedHistory: [],
     };
   }
 
@@ -16,17 +16,20 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const currentSquareObj = history[history.length - 1];
     const squares = currentSquareObj.squares.slice();
+    const indexClickedHistory = this.state.indexClickedHistory;
 
     if (this.calculateWinner(squares) || squares[i]) {
       return;
     }
 
+    indexClickedHistory.push(i);
     squares[i] = this.state.isXNext ? "X" : "O";
+
     this.setState({
       history: history.concat([{ squares }]),
       stepNumber: history.length,
       isXNext: !this.state.isXNext,
-      indexClickedHistory: this.state.indexClickedHistory.concat([i]),
+      indexClickedHistory: indexClickedHistory,
     });
   }
 
@@ -61,10 +64,9 @@ class Game extends React.Component {
     });
   }
 
-  getMovesFromHistory(history) {
+  getMovesFromHistory(history, stepNumber) {
     return history.map((step, index) => {
       let desc = index ? "Go to Move:" + index : "Go to the Game Start";
-
       let rowAndColDescriptions = step.squares.map(
         (squareValue, squareIndex) => {
           if (squareValue !== null) {
@@ -82,7 +84,7 @@ class Game extends React.Component {
 
       let buttonClasses = "btn btn-primary btn-sm my-1".split(" ");
 
-      if (index === this.state.stepNumber) {
+      if (index === stepNumber) {
         buttonClasses.push("fw-bold");
       }
 
@@ -96,7 +98,11 @@ class Game extends React.Component {
               <span>{desc}</span>
               <span className="mx-2">::</span>
               <span>
-                {rowAndColDescriptions[this.state.indexClickedHistory[index]]}
+                {
+                  rowAndColDescriptions[
+                    this.state.indexClickedHistory.at(index - 1)
+                  ]
+                }
               </span>
             </div>
           </button>
@@ -108,7 +114,8 @@ class Game extends React.Component {
   getHighlightedSquares(indexClickedHistory, winner) {
     if (winner) {
       const filtered = indexClickedHistory.filter((ele, index) => {
-        if (winner === "X") {
+        console.log("FILTER", ele, index);
+        if (winner === "O") {
           return index % 2 !== 0;
         } else {
           return index % 2 === 0;
@@ -121,10 +128,12 @@ class Game extends React.Component {
   }
 
   render() {
+    console.log("RENDER:", this.state.indexClickedHistory);
+
     const history = this.state.history;
     const currentSquareObj = history[this.state.stepNumber];
     const winner = this.calculateWinner(currentSquareObj.squares);
-    const moves = this.getMovesFromHistory(history);
+    const moves = this.getMovesFromHistory(history, this.state.stepNumber);
 
     const highlightedSquares = this.getHighlightedSquares(
       this.state.indexClickedHistory,
