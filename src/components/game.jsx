@@ -105,11 +105,31 @@ class Game extends React.Component {
     });
   }
 
+  getHighlightedSquares(indexClickedHistory, winner) {
+    if (winner) {
+      const filtered = indexClickedHistory.filter((ele, index) => {
+        if (winner === "X") {
+          return index % 2 !== 0;
+        } else {
+          return index % 2 === 0;
+        }
+      });
+      return filtered;
+    } else {
+      return [];
+    }
+  }
+
   render() {
     const history = this.state.history;
     const currentSquareObj = history[this.state.stepNumber];
     const winner = this.calculateWinner(currentSquareObj.squares);
     const moves = this.getMovesFromHistory(history);
+
+    const highlightedSquares = this.getHighlightedSquares(
+      this.state.indexClickedHistory,
+      winner
+    );
 
     let status;
     if (winner) {
@@ -124,6 +144,7 @@ class Game extends React.Component {
           <Board
             squares={currentSquareObj.squares}
             onClick={(i) => this.handleClick(i)}
+            highlightedSquares={highlightedSquares}
           />
         </div>
         <div className="game-info">

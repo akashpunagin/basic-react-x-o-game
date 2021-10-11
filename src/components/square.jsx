@@ -1,6 +1,12 @@
 function Square(props) {
+  let squareClasses = ["square"];
+
+  if (props.isHighlighted) {
+    squareClasses.push("square-highlighted");
+  }
+
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className={squareClasses.join(" ")} onClick={props.onClick}>
       {props.value}
     </button>
   );

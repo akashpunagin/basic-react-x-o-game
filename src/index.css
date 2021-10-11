@@ -19,7 +19,6 @@ ul {
 }
 
 .square {
-  background: #fff;
   border: 1px solid #999;
   float: left;
   font-size: 24px;
@@ -31,6 +30,11 @@ ul {
   padding: 0;
   text-align: center;
   width: 34px;
+}
+
+.square-highlighted {
+  background: rgb(151, 147, 147);
+  color: #fff;
 }
 
 .square:focus {
