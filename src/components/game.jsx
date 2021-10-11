@@ -61,12 +61,8 @@ class Game extends React.Component {
     });
   }
 
-  render() {
-    const history = this.state.history;
-    const currentSquareObj = history[this.state.stepNumber];
-    const winner = this.calculateWinner(currentSquareObj.squares);
-
-    const moves = history.map((step, index) => {
+  getMovesFromHistory(history) {
+    return history.map((step, index) => {
       let desc = index ? "Go to Move:" + index : "Go to the Game Start";
 
       let rowAndColDescriptions = step.squares.map(
@@ -84,15 +80,36 @@ class Game extends React.Component {
         }
       );
 
+      let buttonClasses = "btn btn-primary btn-sm my-1".split(" ");
+
+      if (index === this.state.stepNumber) {
+        buttonClasses.push("fw-bold");
+      }
+
       return (
         <li key={index}>
-          <button onClick={() => this.jumpTo(index)}>
-            {desc} ::
-            {rowAndColDescriptions[this.state.indexClickedHistory[index]]}
+          <button
+            onClick={() => this.jumpTo(index)}
+            className={buttonClasses.join(" ")}
+          >
+            <div className="col">
+              <span>{desc}</span>
+              <span className="mx-2">::</span>
+              <span>
+                {rowAndColDescriptions[this.state.indexClickedHistory[index]]}
+              </span>
+            </div>
           </button>
         </li>
       );
     });
+  }
+
+  render() {
+    const history = this.state.history;
+    const currentSquareObj = history[this.state.stepNumber];
+    const winner = this.calculateWinner(currentSquareObj.squares);
+    const moves = this.getMovesFromHistory(history);
 
     let status;
     if (winner) {
@@ -102,7 +119,7 @@ class Game extends React.Component {
     }
 
     return (
-      <div className="game">
+      <div className="container mt-5 game">
         <div className="game-board">
           <Board
             squares={currentSquareObj.squares}
@@ -110,7 +127,7 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
-          <div>{status}</div>
+          <div className="my-2">{status}</div>
           <ol>{moves}</ol>
         </div>
       </div>
